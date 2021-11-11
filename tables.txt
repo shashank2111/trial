@@ -1,0 +1,191 @@
+use world;
+
+show tables;
+drop table student;
+select * from mytable;
+show tables;
+drop table countrylanguage;
+create table user (
+	email varchar(200) not null ,
+    password varchar(200),
+    roletitle varchar(200),
+    primary key (email)
+);
+
+select * from user;
+
+delete from user where email LIKE "shashankadkeshwar1@gmail.com" ;
+
+create table customer (
+	customerID int not null auto_increment unique,
+    firstname varchar(200),
+    lastname varchar(200),
+    email varchar(200) unique,
+    phone varchar(200),
+    address varchar(200),
+    primary key (customerID)
+    );
+
+select * from customer ;	
+
+select *  from customer where customerID = (select MAX(customerID) from customer);
+
+
+create table employee (
+	employeeID int not null auto_increment unique,
+    firstname varchar(200),
+    lastname varchar(200),
+    email varchar(200) not null unique,
+    phone varchar(200),
+    address varchar(200),
+    roletitle varchar(200),
+    Doj varchar(200),
+    education varchar(200),
+    primary key (employeeID)
+    );
+    
+Drop table employee;
+
+select * from employee;
+
+delete from employee where employeeID <= 7 ;
+
+create table agent (
+	agentID int not null auto_increment unique,
+    firstname varchar(200),
+    lastname varchar(200),
+    email varchar(200) not null unique,
+    phone varchar(200),
+    address varchar(200),
+    roletitle varchar(200),
+    primary key (agentID)
+    );
+
+select * from agent;
+
+delete from agent where firstname = "Shashank" ;
+
+Create table request (
+	requestID int not null unique,
+    requestdate varchar(20),
+    isinprocess boolean,
+    isfulfilled boolean,
+    employeeID int,
+    agentId int,
+    totalamount int,
+    primary key (requestID)
+    );
+
+select * from request;
+delete from request where requestID = 6;
+drop table request;
+
+
+Create table requestdetails (
+	requestdetailsID int not null auto_increment unique,
+	requestID  int not null,
+	productID int,
+    quantity int,
+    productprice int,
+    primary key (requestdetailsID)
+    );
+
+Create view requestdetailsview as select requestdetailsID,requestID,p.productID as productID,p.productname as product,quantity,p.sellprice as productprice,p.sellprice * quantity as totalamount from requestdetails as r,product as p where r.productID = p.productID ;
+select * from requestdetailsview;
+select sum(totalamount) as totalamount from requestdetailsview where requestID = 9 group by requestID;
+
+select * from product;
+
+select * from requestdetails;
+update requestdetails set productID = 1 where productID = 13;
+delete from requestdetails;
+drop table requestdetails;
+
+
+Create table orders (
+	orderID int not null auto_increment unique,
+    orderdate varchar(200),
+    orderispending boolean,
+    totalamount int,
+    customerID int,
+    employeeID int,
+    iscancelled boolean,
+    ishandled boolean,
+    primary key (orderID)
+	);
+drop table orders;
+delete from orders;
+insert into orders (orderID,orderdate,orderispending,totalamount,customerID,employeeID,iscancelled,ishandled) values(0,"0000-00-00",true,0,0,0,false,false);    
+    
+create table product(
+	productID int not null unique auto_increment,
+    productname varchar(200),
+    description varchar(200),
+    sellprice int,
+    costprice int,
+    brand varchar(200),
+	categoryId int,
+    primary key (productID)
+	);
+    
+Create table orderdetails (
+	orderdetailsID int not null auto_increment unique,
+	orderID  int not null,
+	productID int,
+    quantity int,
+    productprice int,
+    primary key (orderdetailsID)
+    );
+drop table product;
+    
+drop tables orderdetails;
+delete from orderdetails;
+Insert into product (productID,productname,description,sellprice,costprice,brand,categoryId) values(1,"Adidas Men's Shoes ","Adidas Men's Shoes Black,grey midole and outsole for cushioned comfort",1699,1400,"Adidas",1);
+Insert into product (productID,productname,description,sellprice,costprice,brand,categoryId) values(2,"Adidas Men's Action Shoes ","Adidas Men's Action Schoes white,KLASSy,travelling partner ",2349,2049,"Adidas",1 ),
+																									(3,"Nike Men's Sports Shoes ","Nike Men's Sports Shoes Leather, durable and sturdy" ,2099 , 1949,"Nike",1),
+                                                                                                    (4,"Nike Men's Action Shoes ","Nike Men's Action Shores White and Red combo ,KLASSy partner",2644, 2490,"Nike",1),
+                                                                                                    (5,"Nike Men's Football Shoes ","Nike Men's Downspike football shoes ,Micro-textured upper for improved ball control",2980,2700,"Nike",1);
+Insert into product (productID,productname,description,sellprice,costprice,brand,categoryId) values(12,"OnePlus Nord 2","OnePlus nord 2 - 8GB Ram , 128 GB , Blue Haze , Notch Camera",29999,27349,"OnePlus",2),
+																								   (13,"iphone 11 ","iphone 11 64GB red 6.1-inch (15.4 cm diagonal) Liquid Retina HD LCD display \n Water and dust resistant (2 meters for up to 30 minutes, IP68)",46999,42899,"Apple",2);
+
+select * from product;                                                                                                    
+select * from orders;
+select * from orderdetails;
+
+create view orderdetailsview as select  orderID,orderdetailsID, o.productID ,t.productname as product, quantity, t.sellprice as productprice , quantity * t.sellprice as amount from orderdetails as o, product as t where t.productID = o.productID;
+select * from orderdetailsview;
+drop view orderdetailsview;
+-- create view v1 as select orderID, orderdate, orderispending,
+-- and (orders.employeeID = null or orders.employeeID = employee.employeeID);
+-- orders.employeeId,employee.email 
+create view ordersview as select customer.email as customeremail,orderID, orderdate,orderispending,ishandled,iscancelled,totalamount,orders.customerID as customerID from customer,orders where customer.customerID = orders.customerID ;
+select * from ordersview;
+drop view ordersview;
+select * from ordersview where ishandled = true and orderispending = true and customerID != 0;
+
+
+create table supply (
+	agentID int not null ,
+    productID int not null,
+    primary key (agentID,productID)
+	);
+    
+select * from supply;
+select * from agent;
+select * from product;
+insert into supply (agentID,productID) values
+    (14,2),
+    (9,2);
+
+create view supplyview as select supply.agentID,agent.email,p.productID as productID,p.productname as product,p.sellprice from product as p,agent,supply where p.productId = supply.productID and supply.agentID = agent.agentID;  
+
+select * from supplyview;
+
+create table category(
+	categoryID int,
+    categoryname varchar(200),
+    roomno int,
+    primary key (categoryID)
+);
+
+insert into category (categoryID,categoryname,roomno) values (2,"Mobiles",2);
